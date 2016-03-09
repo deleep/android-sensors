@@ -19,9 +19,28 @@ android {
     }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
+ext {
+    retrofit_version = "1.9.0"
+    joda_time = "2.9.2"
+    picasso = "2.5.2"
+    appcompat_v7 = "23.2.0"
+    palette_v7 = "23.2.0"
+    design = "23.2.0"
+    junit = "4.12"
 }
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile "junit:junit:${junit}"
+    compile "com.android.support:appcompat-v7:${appcompat_v7}"
+    compile "com.android.support:design:${design}"
+    compile "com.android.support:palette-v7:${palette_v7}"
+    compile project(':swagger-java-client-1.0.0')
+    compile "com.squareup.retrofit:retrofit:${retrofit_version}"
+    compile "joda-time:joda-time:${joda_time}"
+    compile "com.squareup.picasso:picasso:${picasso}"
+
+}
+
+
+
+
