@@ -6,6 +6,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.dataart.devicehive.androidsensors.R;
@@ -32,12 +35,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
     private ViewPager viewPager;
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -49,12 +48,12 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), "devicehive_schema");
         supportPostponeEnterTransition();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -73,17 +72,16 @@ public class MainActivity extends AppCompatActivity {
 
         final ImageView image = (ImageView) findViewById(R.id.image);
         Picasso.with(this)
-                .load(R.drawable.devicehive_banner5)
-                .fit()
+                .load(R.drawable.devicehive_banner2)
                 .into(image
                         , new Callback() {
                     @Override
                     public void onSuccess() {
                         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-
                         Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                             public void onGenerated(Palette palette) {
                                 applyPalette(palette);
+
                             }
                         });
                     }
@@ -97,8 +95,15 @@ public class MainActivity extends AppCompatActivity {
 //        viewPager = (ViewPager) findViewById(R.id.viewpager);
 //        setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(collapsingToolbarLayout, "Floating button clicked", Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -113,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
     private void applyPalette(Palette palette) {
         int primaryDark = getResources().getColor(R.color.colorPrimaryDark);
         int primary = getResources().getColor(R.color.colorPrimary);
-        collapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
-        collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
+        collapsingToolbarLayout.setContentScrimColor(primary);
+        collapsingToolbarLayout.setStatusBarScrimColor(primaryDark);
+//        collapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
+//        collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
 //        updateBackground((FloatingActionButton) findViewById(R.id.fab), palette);
         supportStartPostponedEnterTransition();
     }
