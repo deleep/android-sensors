@@ -3,6 +3,10 @@ package com.dataart.devicehive.androidsensors.activity;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -32,11 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
     private ViewPager viewPager;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private long lastUpdate;
+    private SensorManager mSensorManager;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -59,10 +65,15 @@ public class MainActivity extends AppCompatActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
-        ArrayList<String> fakeData = new ArrayList<>();
-        for (int i = 1; i <= 20; i++) {
-            fakeData.add("Item " + i);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        List<Sensor> mSensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        final ArrayList<String> fakeData = new ArrayList<>();
+        for (Sensor sensor : mSensorList) {
+            fakeData.add(sensor.getName());
         }
+
 
         RecyclerViewArrayAdapter listAdapter = new RecyclerViewArrayAdapter(fakeData, this);
 
@@ -101,9 +112,23 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(collapsingToolbarLayout, "Floating button clicked", Snackbar.LENGTH_SHORT).show();
+                final Snackbar snackbar = Snackbar.make(collapsingToolbarLayout, ("Total sensors " + fakeData.size()), Snackbar.LENGTH_LONG);
+                snackbar.setAction("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                });
+                snackbar.show();
+
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
@@ -112,6 +137,28 @@ public class MainActivity extends AppCompatActivity {
             return super.dispatchTouchEvent(motionEvent);
         } catch (NullPointerException e) {
             return false;
+        }
+    }
+
+    private void getAccelerometer(SensorEvent event, View view) {
+        float[] values = event.values;
+        // Movement
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+
+        float accelationSquareRoot = (x * x + y * y + z * z)
+                / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+        long actualTime = event.timestamp;
+        if (accelationSquareRoot >= 2) //
+        {
+            if (actualTime - lastUpdate < 200) {
+                return;
+            }
+            lastUpdate = actualTime;
+            Snackbar.make(view, "Device was shuffed " + accelationSquareRoot, Snackbar.LENGTH_SHORT)
+                    .show();
+
         }
     }
 
@@ -124,6 +171,18 @@ public class MainActivity extends AppCompatActivity {
 //        collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
 //        updateBackground((FloatingActionButton) findViewById(R.id.fab), palette);
         supportStartPostponedEnterTransition();
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(event, collapsingToolbarLayout);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
 //    private void setupViewPager(ViewPager viewPager) {
