@@ -1,4 +1,4 @@
-package com.dataart.devicehive.androidsensors.fragment;
+package com.dataart.devicehive.androidsensors.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -1,6 +1,6 @@
 
 
-package com.dataart.devicehive.androidsensors.widgets;
+package com.dataart.devicehive.androidsensors.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

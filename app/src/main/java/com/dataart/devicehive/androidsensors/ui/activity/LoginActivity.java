@@ -1,4 +1,4 @@
-package com.dataart.devicehive.androidsensors.activity;
+package com.dataart.devicehive.androidsensors.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

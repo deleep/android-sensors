@@ -11,4 +11,8 @@
     <dimen name="elevation_low">9dp</dimen>
     <dimen name="elevation_high">12dp</dimen>
     <dimen name="status_bar_height">25dp</dimen>
+
+    <dimen name="tab_label">14sp</dimen>
+    <dimen name="custom_tab_layout_height">72dp</dimen>
+    <dimen name="tabsHeight">48dp</dimen>
 </resources>
